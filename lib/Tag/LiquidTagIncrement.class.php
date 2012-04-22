@@ -18,6 +18,7 @@ class LiquidTagIncrement extends LiquidTag
 	 * @var string
 	 */
 	private $_toIncrement;
+	private $_incrementWith;
 
 	/**
 	 * Constructor
@@ -29,11 +30,19 @@ class LiquidTagIncrement extends LiquidTag
 	 */
 	public function __construct($markup, &$tokens, &$file_system)
 	{
-		$syntax = new LiquidRegexp("/(".LIQUID_ALLOWED_VARIABLE_CHARS."+)/");
+		$syntax = new LiquidRegexp("/(".LIQUID_ALLOWED_VARIABLE_CHARS."+)(\s+(with)\s+(".LIQUID_QUOTED_FRAGMENT."+))?/");
 
 		if ($syntax->match($markup))
 		{
-			$this->_toIncrement = $syntax->matches[0];
+			if (isset($syntax->matches[4]))
+			{
+				$this->_toIncrement = $syntax->matches[1];
+				$this->_incrementWith = $syntax->matches[4];
+			}
+			else
+			{
+				$this->_toIncrement = $syntax->matches[0];
+			}
 		}
 		else
 		{
@@ -59,7 +68,21 @@ class LiquidTagIncrement extends LiquidTag
 			$context->environments[0][$this->_toIncrement] = (null !== $from_context) ? $from_context : -1;
 		}
 
+		$increment_with = 1;
+
+		// if the increment is a number add it to our value
+		if (is_numeric($this->_incrementWith))
+		{
+			$increment_with = $this->_incrementWith;
+		}
+
+		// check if the increment is actually a context variable
+		if (null !== ($tmp = $context->get($this->_incrementWith)))
+		{
+			$increment_with = $tmp;
+		}
+
 		// increment the value
-		$context->environments[0][$this->_toIncrement] ++;
+		$context->environments[0][$this->_toIncrement] += $increment_with;
 	}
 }
