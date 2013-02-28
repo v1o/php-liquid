@@ -93,5 +93,5 @@ class LiquidTagAssign extends LiquidTag
 		}
 
 		$context->set($this->_to, $output);
-	}	
+	}
 }

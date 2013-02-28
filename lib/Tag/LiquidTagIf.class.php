@@ -1,10 +1,10 @@
 <?php
 /**
  * An if statement
- * 
+ *
  * @example
  * {% if true %} YES {% else %} NO {% endif %}
- * 
+ *
  * will return:
  * YES
  *
@@ -58,7 +58,7 @@ class LiquidTagIf extends LiquidDecisionBlock
 	 */
 	function unknown_tag($tag, $params, &$tokens)
 	{
-		if($tag == 'else' || $tag == 'elsif')
+		if($tag == 'else' || $tag == 'elseif')
 		{
 			/* Update reference to nodelistHolder for this block */
 			$this->_nodelist = &$this->_nodelistHolders[count($this->_blocks) + 1];
@@ -99,7 +99,7 @@ class LiquidTagIf extends LiquidDecisionBlock
 				break;
 			}
 
-			if($block[0] == 'if' || $block[0] == 'elsif')
+			if($block[0] == 'if' || $block[0] == 'elseif')
 			{
 				/* Extract logical operators */
 				$logicalRegex->match($block[1]);
